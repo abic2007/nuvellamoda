@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuvella Moda | Expresa tu Estilo</title>
+    <!-- Carga del CDN de Tailwind CSS (Requerido para los estilos) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Carga de íconos de Lucide (Modernos y limpios) -->
+    <script src="https://unpkg.com/lucide@latest"></script> 
+    
+    <!-- Configuración personalizada de Tailwind CSS con la paleta de colores lila -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'], // Fuente moderna
+                    },
+                    colors: {
+                        // Paleta personalizada de Nuvella Moda
+                        'nuvella-primary': '#C8A2C8', // Lila principal (Botones, acentos)
+                        'nuvella-secondary': '#E6CCE6', // Lila suave (Fondos de sección)
+                        'nuvella-contrast': '#4B0082', // Morado oscuro (Texto, Footer)
+                        'nuvella-white': '#FFFFFF',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Estilos Adicionales y Animaciones -->
+    <style>
+        /* Estilos base para el cuerpo */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--nuvella-white);
+        }
+        
+        /* Estilo para las tarjetas de producto con hover animado */
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            @apply bg-nuvella-white rounded-xl shadow-lg overflow-hidden border border-nuvella-secondary/70;
+        }
+
+        .card:hover {
+            transform: translateY(-6px); /* Efecto de elevación suave */
+            box-shadow: 0 12px 25px rgba(200, 162, 200, 0.4); /* Sombra lila sutil */
+        }
+
+        /* Estilo base para botones primarios (rectangular, como se solicitó) */
+        .btn-primary {
+            @apply bg-nuvella-primary text-nuvella-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out hover:bg-nuvella-contrast shadow-md hover:shadow-lg transform hover:scale-[1.02];
+        }
+
+        /* Estilo para botones de acción secundaria (ej. en las tarjetas) */
+        .btn-secondary {
+            @apply bg-nuvella-contrast text-nuvella-white font-medium py-2 px-4 rounded-md transition duration-200 hover:bg-nuvella-primary/90;
+        }
+        
+        /* Estilo para los botones de filtro */
+        .filter-btn {
+             @apply px-4 py-2 rounded-full font-medium transition duration-150 border border-nuvella-primary/50 text-nuvella-contrast hover:bg-nuvella-secondary/50;
+        }
+        .filter-btn.active {
+            @apply bg-nuvella-primary text-white border-nuvella-primary shadow-md;
+        }
+    </style>
+</head>
+
+<body class="text-gray-800">
+
+    <!-- 1. HEADER Y NAVEGACIÓN (Sticky) -->
+    <header id="inicio" class="sticky top-0 z-50 bg-nuvella-white shadow-md border-b border-nuvella-secondary">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <a href="#inicio" class="text-3xl font-bold text-nuvella-contrast tracking-wider transition duration-300 hover:text-nuvella-primary">
+                    Nuvella Moda
+                </a>
+                
+                <!-- Menú de Navegación (Desktop) -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#inicio" class="text-nuvella-contrast font-medium hover:text-nuvella-primary transition duration-150">Inicio</a>
+                    <a href="#productos" class="text-nuvella-contrast font-medium hover:text-nuvella-primary transition duration-150">Productos</a>
+                    <a href="#promociones" class="text-nuvella-contrast font-medium hover:text-nuvella-primary transition duration-150">Promociones</a>
+                    <a href="#contacto" class="text-nuvella-contrast font-medium hover:text-nuvella-primary transition duration-150">Contacto</a>
+                </nav>
+
+                <!-- Carrito y Menú (Mobile) -->
+                <div class="flex items-center space-x-4">
+                    <!-- Icono Carrito de Compras -->
+                    <button id="cart-button" class="relative p-2 rounded-full text-nuvella-contrast hover:bg-nuvella-secondary transition" aria-label="Carrito de compras">
+                        <i data-lucide="shopping-cart" class="w-6 h-6"></i>
+                        <!-- Contador de items en el carrito (Placeholder) -->
+                        <span id="cart-counter" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-nuvella-white">
+                            0
+                        </span>
+                    </button>
+
+                    <!-- Botón de Menú (Mobile) -->
+                    <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-nuvella-contrast hover:bg-nuvella-secondary transition">
+                        <i data-lucide="menu" id="menu-icon" class="w-6 h-6"></i>
+                        <i data-lucide="x" id="close-icon" class="w-6 h-6 hidden"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Menú Móvil Desplegable -->
+        <div id="mobile-menu" class="hidden md:hidden bg-nuvella-white shadow-lg border-t border-nuvella-secondary">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#inicio" class="block px-3 py-2 rounded-md text-base font-medium text-nuvella-contrast hover:bg-nuvella-secondary" onclick="closeMobileMenu()">Inicio</a>
+                <a href="#productos" class="block px-3 py-2 rounded-md text-base font-medium text-nuvella-contrast hover:bg-nuvella-secondary" onclick="closeMobileMenu()">Productos</a>
+                <a href="#promociones" class="block px-3 py-2 rounded-md text-base font-medium text-nuvella-contrast hover:bg-nuvella-secondary" onclick="closeMobileMenu()">Promociones</a>
+                <a href="#contacto" class="block px-3 py-2 rounded-md text-base font-medium text-nuvella-contrast hover:bg-nuvella-secondary" onclick="closeMobileMenu()">Contacto</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 2. SECCIÓN HERO PRINCIPAL (Texto Izquierda, Imagen Derecha) -->
+    <section class="bg-nuvella-secondary/80 py-16 lg:py-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+                
+                <!-- Columna Izquierda: Texto -->
+                <div class="order-2 md:order-1 text-center md:text-left">
+                    <h1 class="text-5xl md:text-6xl font-extrabold text-nuvella-contrast mb-4 leading-tight">
+                        Expresa tu estilo con <span class="text-nuvella-primary">Nuvella Moda</span>
+                    </h1>
+                    <p class="text-xl text-nuvella-contrast/90 mb-8">
+                        Colecciones únicas de ropa y maquillaje diseñadas para realzar tu belleza natural y tu elegancia.
+                    </p>
+                    <a href="#productos" class="btn-primary inline-flex items-center space-x-2">
+                        <span>Descubre Ahora</span>
+                        <i data-lucide="heart" class="w-5 h-5"></i>
+                    </a>
+                </div>
+
+                <!-- Columna Derecha: Imagen -->
+                <div class="order-1 md:order-2">
+                    <img src="https://placehold.co/600x500/C8A2C8/FFFFFF?text=Elegancia+Femenina" 
+                         alt="Modelo elegante con ropa y maquillaje Nuvella Moda" 
+                         class="w-full h-auto object-cover rounded-3xl shadow-2xl border-4 border-nuvella-white">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. SECCIÓN DE PRODUCTOS (Con Filtrado) -->
+    <section id="productos" class="py-16 lg:py-24 bg-nuvella-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-center text-nuvella-contrast mb-10">Nuestro Catálogo</h2>
+            
+            <!-- Botones de Filtro de Categoría -->
+            <div class="flex justify-center space-x-4 mb-10 overflow-x-auto pb-2">
+                <!-- Data-category se usa para el filtrado en JS -->
+                <button class="filter-btn active" data-category="Todos" onclick="filterProducts('Todos', this)">Todos</button>
+                <button class="filter-btn" data-category="Ropa" onclick="filterProducts('Ropa', this)">Ropa</button>
+                <button class="filter-btn" data-category="Maquillaje" onclick="filterProducts('Maquillaje', this)">Maquillaje</button>
+            </div>
+
+            <!-- Grid de Productos (Contenedor Dinámico) -->
+            <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                <!-- Los productos se renderizarán aquí por JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. SECCIÓN DE PROMOCIONES O PRODUCTOS DESTACADOS -->
+    <section id="promociones" class="py-16 lg:py-24 bg-nuvella-secondary/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-center text-nuvella-contrast mb-12">Promoción Destacada</h2>
+            
+            <!-- Tarjeta de Promoción Destacada -->
+            <div class="bg-nuvella-white rounded-2xl shadow-2xl p-6 md:p-10 flex flex-col md:flex-row items-center gap-8 border-4 border-nuvella-primary/70">
+                
+                <!-- Contenido de la Promoción -->
+                <div class="md:w-2/3 order-2 md:order-1">
+                    <span class="text-sm font-bold uppercase tracking-widest text-red-600 bg-red-100 py-1 px-3 rounded-full mb-3 inline-block">¡Súper Ahorro!</span>
+                    <h3 class="text-3xl font-bold text-nuvella-contrast mb-4">Set Esencial de Belleza</h3>
+                    <p class="text-gray-600 mb-6">
+                        Consigue nuestro set de polvos compactos, labial y el vestido más vendido de la temporada con un 20% de descuento. ¡Perfecto para cualquier ocasión!
+                    </p>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-3xl font-bold text-nuvella-contrast">79.90 Bs</span>
+                        <span class="text-xl text-gray-400 line-through">99.90 Bs</span>
+                    </div>
+                    <button class="btn-primary mt-6">
+                        Comprar Oferta
+                    </button>
+                </div>
+
+                <!-- Imagen Destacada -->
+                <div class="w-full md:w-1/3 flex-shrink-0 order-1 md:order-2">
+                    <img src="https://placehold.co/400x300/C8A2C8/FFFFFF?text=Oferta+20%25" 
+                         alt="Combo de Temporada en Oferta" 
+                         class="rounded-xl w-full h-auto object-cover border border-nuvella-primary">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. FORMULARIO DE CONTACTO -->
+    <section id="contacto" class="py-16 lg:py-24 bg-nuvella-white">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-center text-nuvella-contrast mb-12">Contáctanos</h2>
+            
+            <!-- Formulario con Estilos Lila Suave -->
+            <form id="contact-form" class="space-y-6 bg-nuvella-secondary/30 p-8 rounded-2xl shadow-xl border border-nuvella-primary/50">
+                
+                <!-- Campo Nombre -->
+                <div>
+                    <label for="name" class="block text-sm font-medium text-nuvella-contrast mb-1">Nombre</label>
+                    <input type="text" id="name" name="name" required 
+                           class="w-full p-3 border border-nuvella-primary/50 rounded-lg focus:ring-nuvella-primary focus:border-nuvella-primary transition duration-150">
+                </div>
+                
+                <!-- Campo Email -->
+                <div>
+                    <label for="email" class="block text-sm font-medium text-nuvella-contrast mb-1">Correo Electrónico</label>
+                    <input type="email" id="email" name="email" required 
+                           class="w-full p-3 border border-nuvella-primary/50 rounded-lg focus:ring-nuvella-primary focus:border-nuvella-primary transition duration-150">
+                </div>
+                
+                <!-- Campo Mensaje -->
+                <div>
+                    <label for="message" class="block text-sm font-medium text-nuvella-contrast mb-1">Mensaje</label>
+                    <textarea id="message" name="message" rows="4" required 
+                              class="w-full p-3 border border-nuvella-primary/50 rounded-lg focus:ring-nuvella-primary focus:border-nuvella-primary transition duration-150"></textarea>
+                </div>
+                
+                <!-- Mensaje de Confirmación (Se muestra al enviar) -->
+                <div id="success-message" class="hidden p-4 bg-green-100 border-l-4 border-green-500 text-green-700 rounded-lg" role="alert">
+                    <p class="font-semibold">¡Mensaje Enviado!</p>
+                    <p>Gracias por contactarnos. Te responderemos a la brevedad.</p>
+                </div>
+
+                <!-- Botón Enviar -->
+                <button type="submit" class="btn-primary w-full mt-4">
+                    <i data-lucide="send" class="inline-block w-5 h-5 mr-2"></i>
+                    Enviar Mensaje
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- 6. FOOTER -->
+    <footer class="bg-nuvella-contrast text-nuvella-white py-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            
+            <!-- Redes Sociales (Instagram, TikTok, WhatsApp) -->
+            <div class="flex justify-center space-x-8 mb-6">
+                <!-- Ícono de Instagram -->
+                <a href="#" target="_blank" aria-label="Instagram" class="text-nuvella-white hover:text-nuvella-primary transition duration-300 transform hover:scale-110">
+                    <i data-lucide="instagram" class="w-7 h-7"></i>
+                </a>
+                <!-- Ícono de TikTok (Usamos un SVG simple para simular el logo de TikTok, ya que Lucide no lo incluye) -->
+                <a href="#" target="_blank" aria-label="TikTok" class="text-nuvella-white hover:text-nuvella-primary transition duration-300 transform hover:scale-110">
+                    <svg class="w-7 h-7 fill-current" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16.59 7.55c.1.34.19.78.19 1.4v4.44c0 3.73-2.92 6.77-6.52 6.77-3.6 0-6.52-3.04-6.52-6.77 0-3.73 2.92-6.77 6.52-6.77.2 0 .39.01.59.02v2.74c-.1-.01-.18-.02-.27-.02-2.12 0-3.85 1.76-3.85 3.91 0 2.15 1.73 3.91 3.85 3.91 2.12 0 3.85-1.76 3.85-3.91V2.85h3.81c.58 2.05-.18 4.26-1.55 5.5z"/>
+                    </svg>
+                </a>
+                <!-- Ícono de WhatsApp (Usamos 'Phone' de Lucide) -->
+                <a href="#" target="_blank" aria-label="WhatsApp" class="text-nuvella-white hover:text-nuvella-primary transition duration-300 transform hover:scale-110">
+                    <i data-lucide="phone" class="w-7 h-7"></i>
+                </a>
+            </div>
+
+            <!-- Derechos Reservados -->
+            <p class="text-sm">
+                &copy; <span id="current-year"></span> Nuvella Moda. Todos los derechos reservados.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Scripts de JavaScript para Lógica de la Tienda -->
+    <script>
+        // Inicializa los íconos de Lucide
+        lucide.createIcons();
+
+        // -----------------------------------------------------------
+        // 1. DATA DE PRODUCTOS (Lista de ejemplo con precios 10-100 Bs)
+        // -----------------------------------------------------------
+        const ALL_PRODUCTS = [
+            // ROPA
+            { id: 1, name: "Vestido de Seda 'Lila'", category: 'Ropa', price: 95.50, image: "https://placehold.co/400x500/E6CCE6/4B0082?text=Ropa+Vestido" },
+            { id: 2, name: "Blusa Algodón Bordado", category: 'Ropa', price: 62.90, image: "https://placehold.co/400x500/C8A2C8/FFFFFF?text=Ropa+Blusa" },
+            { id: 3, name: "Falda Plisada Verano", category: 'Ropa', price: 79.99, image: "https://placehold.co/400x500/E6CCE6/4B0082?text=Ropa+Falda" },
+            { id: 4, name: "Shorts Casuales Lino", category: 'Ropa', price: 45.00, image: "https://placehold.co/400x500/C8A2C8/FFFFFF?text=Ropa+Shorts" },
+            { id: 5, name: "Chaqueta Denim Ligera", category: 'Ropa', price: 89.00, image: "https://placehold.co/400x500/E6CCE6/4B0082?text=Ropa+Chaqueta" },
+            { id: 6, name: "Top Crop Básico", category: 'Ropa', price: 25.00, image: "https://placehold.co/400x500/C8A2C8/FFFFFF?text=Ropa+Top" },
+            // MAQUILLAJE
+            { id: 7, name: "Paleta de Sombras 'Aurora'", category: 'Maquillaje', price: 65.00, image: "https://placehold.co/400x500/E6CCE6/4B0082?text=Maquillaje+Paleta" },
+            { id: 8, name: "Labial Líquido Mate 'Nude'", category: 'Maquillaje', price: 32.50, image: "https://placehold.co/400x500/C8A2C8/FFFFFF?text=Maquillaje+Labial" },
+            { id: 9, name: "Base Cobertura Total", category: 'Maquillaje', price: 75.00, image: "https://placehold.co/400x500/E6CCE6/4B0082?text=Maquillaje+Base" },
+            { id: 10, name: "Máscara de Pestañas Volumen", category: 'Maquillaje', price: 45.90, image: "https://placehold.co/400x500/C8A2C8/FFFFFF?text=Maquillaje+Mascara" },
+            { id: 11, name: "Iluminador Líquido", category: 'Maquillaje', price: 58.00, image: "https://placehold.co/400x500/E6CCE6/4B0082?text=Maquillaje+Iluminador" },
+            { id: 12, name: "Set de Brochas Mini", category: 'Maquillaje', price: 39.00, image: "https://placehold.co/400x500/C8A2C8/FFFFFF?text=Maquillaje+Brochas" },
+        ];
+        
+        // Variable global para el carrito (placeholder)
+        let cartItemCount = 0;
+
+
+        // -----------------------------------------------------------
+        // 2. LÓGICA DE RENDERIZADO Y FILTRADO DE PRODUCTOS
+        // -----------------------------------------------------------
+
+        // Función para renderizar una tarjeta de producto
+        function createProductCard(product) {
+            const card = document.createElement('div');
+            card.classList.add('card');
+            
+            // Usamos un template string para el HTML interno de la tarjeta
+            card.innerHTML = `
+                <img src="${product.image}" alt="${product.name}" onerror="this.onerror=null;this.src='https://placehold.co/400x500/E6CCE6/4B0082?text=Nuvella';" class="w-full h-72 object-cover">
+                <div class="p-4 md:p-6">
+                    <h3 class="text-xl font-semibold text-nuvella-contrast mb-1">${product.name}</h3>
+                    <p class="text-gray-500 mb-3">${product.category}</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-2xl font-bold text-nuvella-primary">${product.price.toFixed(2)} Bs</span>
+                        <!-- Botón rectangular 'Comprar' -->
+                        <button class="btn-secondary" data-id="${product.id}" onclick="addToCart(${product.id})">
+                            Comprar
+                        </button>
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        // Función para renderizar los productos en la cuadrícula
+        function displayProducts(productsToDisplay) {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = ''; // Limpia la cuadrícula actual
+
+            if (productsToDisplay.length === 0) {
+                 grid.innerHTML = '<p class="col-span-full text-center text-xl text-gray-500 py-10">No hay productos disponibles en esta categoría.</p>';
+                 return;
+            }
+
+            productsToDisplay.forEach(product => {
+                grid.appendChild(createProductCard(product));
+            });
+        }
+
+        // Función para filtrar los productos al hacer clic en un botón
+        function filterProducts(category, clickedButton) {
+            // Actualiza el estado activo de los botones de filtro
+            const allButtons = document.querySelectorAll('.filter-btn');
+            allButtons.forEach(btn => btn.classList.remove('active'));
+            if (clickedButton) {
+                clickedButton.classList.add('active');
+            }
+
+            let filteredList = [];
+            
+            if (category === 'Todos') {
+                filteredList = ALL_PRODUCTS;
+            } else {
+                filteredList = ALL_PRODUCTS.filter(product => product.category === category);
+            }
+
+            displayProducts(filteredList);
+        }
+        
+        // -----------------------------------------------------------
+        // 3. LÓGICA DEL CARRITO (Simulación)
+        // -----------------------------------------------------------
+        const cartCounter = document.getElementById('cart-counter');
+
+        function updateCartCounter() {
+            cartCounter.textContent = cartItemCount;
+        }
+
+        function addToCart(productId) {
+            cartItemCount++;
+            updateCartCounter();
+            console.log(`Producto ID ${productId} añadido al carrito. Total: ${cartItemCount}`);
+        }
+
+        // -----------------------------------------------------------
+        // 4. LÓGICA DE MENÚ MÓVIL Y FORMULARIO
+        // -----------------------------------------------------------
+
+        // Lógica del Menú Móvil
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIcon = document.getElementById('menu-icon');
+        const closeIcon = document.getElementById('close-icon');
+
+        function toggleMobileMenu() {
+            mobileMenu.classList.toggle('hidden');
+            menuIcon.classList.toggle('hidden');
+            closeIcon.classList.toggle('hidden');
+        }
+
+        function closeMobileMenu() {
+             if (!mobileMenu.classList.contains('hidden')) {
+                toggleMobileMenu();
+            }
+        }
+
+        mobileMenuButton.addEventListener('click', toggleMobileMenu);
+
+        // Lógica del Formulario de Contacto (Muestra confirmación sin usar alert())
+        const contactForm = document.getElementById('contact-form');
+        const successMessage = document.getElementById('success-message');
+
+        contactForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Evita el envío tradicional
+            
+            // 1. Mostrar el mensaje de éxito en la UI
+            successMessage.classList.remove('hidden');
+            
+            // 2. Limpiar los campos del formulario
+            contactForm.reset(); 
+
+            // 3. Ocultar el mensaje de éxito después de 5 segundos
+            setTimeout(() => {
+                successMessage.classList.add('hidden');
+            }, 5000); 
+        });
+
+        // -----------------------------------------------------------
+        // 5. INICIALIZACIÓN
+        // -----------------------------------------------------------
+        window.onload = function() {
+            // Establecer el año actual en el Footer
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+            
+            // Inicializar la vista de productos en la categoría "Todos"
+            const initialButton = document.querySelector('[data-category="Todos"]');
+            filterProducts('Todos', initialButton);
+            
+            // Inicializar el contador del carrito
+            updateCartCounter();
+        };
+    </script>
+</body>
+</html>
